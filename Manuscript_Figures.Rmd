@@ -121,9 +121,9 @@ colnames(df_ct) <- c("0 min", "45 mins", "90 mins")
 ```
 
 
-##Box plot
 
-```{r,  fig.cap="Box Plot showing ChIP enrichment over control loci for ER at 0, 45 and 90 minutes after stimuation with 100nM E2"}
+
+```{r,  fig.cap="Box Plot showing ChIP enrichment over control loci for ER at 0, 45 and 90 minutes after stimuation with 100nM E2", include=FALSE }
 
 set.seed(1)
 par(mar = c(5, 5, 3, 1))
@@ -145,6 +145,49 @@ stripchart(
     method = "jitter",
     jitter = 0.05
 )          
+
+```
+
+##Box plot of Raw Data
+
+```{r, fig.cap="Box Plot showing ChIP enrichment over control loci for ER at 0, 45 and 90 minutes after stimuation with 100nM E2"}
+library("ggpubr")
+
+tp1<-cbind(df_ct["0 min"],rep("0 min",8))
+tp2<-cbind(df_ct["45 mins"],rep("45 min",8))
+tp3<-cbind(df_ct["90 mins"],rep("90 min",8))
+
+colnames(tp1)<-c("Enrichment","Time")
+colnames(tp2)<-c("Enrichment","Time")
+colnames(tp3)<-c("Enrichment","Time")
+
+df<-rbind(tp1,tp2,tp3)
+
+
+#Code to remove data points more than 2*IQR from median. P-value are one-sided Wilcoxon rank test. Looks better but makes little differnce
+#tp3<-tp3[!(df$Enrichment[df$Time=="90 min"]>median(df$Enrichment[df$Time=="90 min"])+IQR(df$Enrichment[df$Time=="90 min"])*2),]
+#tp2<-tp2[!(df$Enrichment[df$Time=="45 min"]>median(df$Enrichment[df$Time=="45 min"])+IQR(df$Enrichment[df$Time=="45 min"])*2),]
+
+df<-rbind(tp1,tp2,tp3)
+
+ p <- ggboxplot(df, x = "Time", y = "Enrichment",
+                color = "Time", palette =c("#00AFBB", "#E7B800", "#FC4E07"),
+                add = "jitter", shape = "Time",
+                outlier.shape=NA,
+                 main = "ER-alpha occupany of the TFF1 promoter",
+                ylab = "Enrichment over Input",
+                xlab = "Time point",
+                show.legend=FALSE) +theme(legend.position="none")
+ 
+ my_comparisons <- list(c("90 min", "0 min"), c("45 min", "0 min"),  c("45 min", "90 min") )
+
+p + stat_compare_means(comparisons = my_comparisons,
+                       method="t.test",
+                       label = "p-value",
+                       show.legend=FALSE,
+                       method.args=list(alternative="greater"))
+
+
 
 ```
 
