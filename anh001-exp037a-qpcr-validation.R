@@ -1,4 +1,4 @@
-setwd("~/Dropbox (Cambridge University)/Work/CRUK/Results/ANH001-EXP037-03 - qPCR")
+
 
 
 #Set varibles to make time points easier to spot
